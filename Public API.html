@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task 7 – Fetch API Demo</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #eef2f3;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #333;
+  }
+  #user-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+  }
+  .user-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+  .user-card:hover {
+    transform: translateY(-3px);
+  }
+  .error {
+    color: red;
+    text-align: center;
+    margin-top: 15px;
+  }
+  .reload-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .reload-btn:hover {
+    background: #0056b3;
+  }
+</style>
+</head>
+<body>
+
+<h1>📋 User Directory</h1>
+<button class="reload-btn" id="reloadBtn">Reload Data</button>
+<div id="user-container"></div>
+<div class="error" id="errorMsg"></div>
+
+<script>
+  const API_URL = 'https://jsonplaceholder.typicode.com/users';
+  const userContainer = document.getElementById('user-container');
+  const errorMsg = document.getElementById('errorMsg');
+  const reloadBtn = document.getElementById('reloadBtn');
+
+  async function fetchUsers() {
+    userContainer.innerHTML = '';
+    errorMsg.textContent = 'Loading...';
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const users = await response.json();
+      errorMsg.textContent = '';
+      users.forEach(user => {
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        card.innerHTML = `
+          <h3>${user.name}</h3>
+          <p><strong>Email:</strong> ${user.email}</p>
+          <p><strong>Address:</strong> ${user.address.suite}, ${user.address.street}, ${user.address.city}</p>
+        `;
+        userContainer.appendChild(card);
+      });
+    } catch (error) {
+      errorMsg.textContent = '⚠ Unable to fetch data. Please check your connection and try again.';
+    }
+  }
+
+  reloadBtn.addEventListener('click', fetchUsers);
+
+  // Initial fetch
+  fetchUsers();
+</script>
+
+</body>
+</html>
